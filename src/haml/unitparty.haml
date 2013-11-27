@@ -1,0 +1,77 @@
+!!!
+
+/
+  Hello source-viewer! This project was built using ClojureScript
+  (clojure.org/clojurescript), the JavaScript output of which is highly
+  optimized and unintelligible to mortals. If you want to tinker, you should
+  take a look at the original ClojureScript source code. This page should
+  contain a link to the main source code repository.
+
+%html
+  %head
+    %title UNITPARTY
+    %link{rel: 'stylesheet', href: 'css/unitparty.css'}
+    %script{src: 'js/unitparty.js'}
+    :javascript
+      (function () {
+        var checkready = setInterval(function () {
+          if (document.readyState === 'complete') {
+            unitparty.user.init();
+            clearInterval(checkready);
+          }
+        }, 10);
+      })();
+
+  %body
+    %header#header
+      %h1#title
+        %span#unit> UNIT
+        %span#party PARTY
+
+    #unitparty
+      %input#amount{type: 'text', title: 'Quantity to convert', value: 1}
+      %input#source{type: 'text', title: 'Source unit', value: 'minute'}
+      %span#equals= "=>"
+      %input#target{type: 'text', title: 'Target unit', value: 'seconds'}
+      #output
+
+    #help
+      %div
+        :markdown
+          ## UNITPARTY is a unit converter.
+
+          It recognizes unit multiplication (`kilowatt * hour`),
+          division (`meters / second`), and exponentiation (`miles ^ 2`).
+          Operations can be grouped using parentheses.
+
+          It knows what units are compatible, and won't try to convert between
+          incompatible units.  For example, it will convert degrees Fahrenheit
+          to degrees Celsius, but not degrees Celsius to kilograms.
+
+          It is somewhat aware of the concept of significant figures.
+
+          To use UNITPARTY, edit the text in any of the underlined fields above.
+
+          ### Disclaimer:
+
+          UNITPARTY is not a tool for serious research or scientific
+          computation. Many of the units it recognizes are not standardized,
+          and figures calculated by UNITPARTY may not agree with figures
+          from other sources.
+
+          That said, if you believe that UNITPARTY is in serious error
+          (or if there are units you'd like to see added), please
+          [email the author](mailto:walpurgisriot@gmail.com).
+
+      %span.list_container
+        %h3 UNITPARTY knows about these units:
+        %ul#unitlist
+      %span.list_container
+        %h3 and recognizes these metric prefixes:
+        %ul#prefixlist
+
+    #about
+      :markdown
+        [feivel jellyfish](mailto:walpurgisriot@gmail.com) made this in 2013.
+        It is released under the [GNU GPL](https://www.gnu.org/licenses/gpl.html).
+

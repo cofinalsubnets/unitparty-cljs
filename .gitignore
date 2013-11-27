@@ -1,0 +1,6 @@
+target
+dist
+Gemfile.lock
+.bundle
+.sass-cache
+.lein-failures
