@@ -1,28 +1,26 @@
 (ns unitparty.user
   (:require [unitparty.unit :as unit]
             [unitparty.parser :as parser]
-            [unitparty.unit.defs :refer (*unique-units*)]))
+            [unitparty.unit.defs :refer (*units*)]))
 
-(defn- di [s] (.getElementById js/document s))
-(defn- dc [s] (.getElementsByClassName js/document s))
+(def id #(.getElementById js/document %))
 
 (def source (atom nil))
 (def target (atom nil))
 (def amount (atom nil))
 (def max-precision 9)
 
-
 (defn- doupdate []
   (if (and @source @target @amount)
     (try
       (let [[amt prec] @amount
             out (unit/convert @source @target amt prec)]
-        (set! (.-innerText (di "output")) out))
+        (set! (.-innerText (id "output")) out))
       (catch js/Error err
-        (set! (.-innerHTML (di "output"))
+        (set! (.-innerHTML (id "output"))
               (str "can't convert " (unit/show-unit-dimensions @source)
                    " to " (unit/show-unit-dimensions @target)))))
-    (set! (.-innerText (di "output")) "")))
+    (set! (.-innerText (id "output")) "")))
 
 (defn- update-listener [update-targ value-fn]
   (fn [e]
@@ -38,53 +36,47 @@
                 (.add (.-classList elem) "error"))))
         (do (.remove (.-classList elem) "ok")
             (.remove (.-classList elem) "error")
-            (swap! update-targ (constantly nil))))
-      (doupdate))))
+            (swap! update-targ (constantly nil)))))
+    (doupdate)))
 
-(defn- register-updates! [id update-targ value-fn]
-  (let [elem (di id)
-        updater  (update-listener update-targ value-fn)
-        keyhandler (fn [ev]
-                  (this-as this
-                    (if (= (.-keyCode ev) 13)
-                      (.call updater this ev)
-                      (.call updater this false))))]
-    (.addEventListener elem "blur"     updater)
-    (.addEventListener elem "input" keyhandler)))
+(defn- register-updates! [i update-targ value-fn]
+  (let [elem (id i) updater (update-listener update-targ value-fn)]
+    (doseq [ev ["blur" "input"]] (.addEventListener elem ev updater))))
 
-(defn- unit-list-entry [u]
-  (let [elem (.createElement js/document "li")
-        {[uname & _] :names info :info} (meta u)]
+(defn- unit-list-entry [uname info]
+  (let [elem (.createElement js/document "li")]
     (set! (.-innerText elem) uname)
     (set! (.-title elem) info)
-    (set! (.-className elem) "unit list_entry")
-    (set! (.-id elem) (str "unit_list_" uname))
     elem))
 
 (defn- populate-unit-list []
-  (let [unitlist (di "unitlist")]
-    (dorun (for [u (sort-by (comp first :names meta ) (vals *unique-units*))]
-             (.appendChild unitlist (unit-list-entry u))))))
+  (let [unitlist (id "unitlist")]
+    (->> (vals *units*)
+         (map (comp (juxt (comp first :names) :info) meta))
+         (apply sorted-set)
+         (map #(.appendChild unitlist (apply unit-list-entry %)))
+         dorun)))
 
 (defn- prefix-list-entry [prefix mag]
   (let [elem (.createElement js/document "li")]
     (set! (.-innerText elem) prefix)
     (set! (.-title elem) (str "10^" mag))
-    (set! (.-className elem) "prefix list_entry")
-    (set! (.-id elem) (str "prefix_list_" prefix))
     elem))
 
 (defn- populate-prefix-list []
-  (let [prefixlist (di "prefixlist")]
-    (dorun (for [[p m] (sort-by #(* -1 (last %)) parser/metric-prefixes)]
-             (.appendChild prefixlist (prefix-list-entry p m))))))
+  (let [prefixlist (id "prefixlist")]
+    (doseq [[p m] (sort-by #(* -1 (last %)) parser/metric-prefixes)]
+             (.appendChild prefixlist (prefix-list-entry p m)))))
 
-(defn- amt-prec-pair [txt]
-  (let [amt (js/Number txt)
-        dml (re-find #"\.\d+" txt)]
-    [amt (if dml
-           (Math/min max-precision (count dml))
-           1)]))
+(defn- strict-number [s]
+  (let [n (js/Number s)]
+    (if (js/isNaN n) ; NaN != NaN D:
+      (throw (js/Error. (str "not a number: " s)))
+      n)))
+
+(def amt-prec-pair
+  (juxt strict-number
+        #(->> % (re-find #"\.\d+") count (min max-precision) (max 1))))
 
 (defn ^:export init []
   (register-updates! "source" source parser/parse)
@@ -92,7 +84,8 @@
   (register-updates! "amount" amount amt-prec-pair)
   (populate-unit-list)
   (populate-prefix-list)
+
   (let [blur (new js/Event "blur")]
-    (dorun (for [e (map di ["source" "target" "amount"])]
-      (.dispatchEvent e blur)))))
+    (doseq [e (map id ["source" "target" "amount"])]
+      (.dispatchEvent e blur))))
 

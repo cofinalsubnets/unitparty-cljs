@@ -1,19 +1,15 @@
 (ns unitparty.unit.macros)
 
-(defmacro defunits [ureg uniq & us]
-  (let [a1 (gensym) a2 (gensym)]
-    `(do
+(defmacro defunits [ureg & us]
+  `(do
 
-       ~@(map (fn [[un md u]] `(def ~un (with-meta ~u ~md))) us)
+     ~@(map (fn [[unit names info df]]
+              `(def ~unit (with-meta ~df ~{:names names :info info})))
+            us)
 
-       (def ^:dynamic ~ureg
-         (persistent!
-           (reduce (fn [~a1 ~a2]
-                     (reduce #(assoc! %1 %2 ~a2) ~a1 (:names (meta ~a2))))
-                   (transient {}) ~(vec (map first us)))))
-
-       (def ^:dynamic ~uniq
-         (apply hash-map
-                (mapcat (fn [~a1] [(-> ~a1 meta :names first) ~a1])
-                        (vals ~ureg)))))))
+     (def ^:dynamic ~ureg
+       (persistent!
+         (reduce (fn [a# b#]
+                   (reduce #(assoc! %1 %2 b#) a# (:names (meta b#))))
+                 (transient {}) ~(vec (map first us)))))))
 

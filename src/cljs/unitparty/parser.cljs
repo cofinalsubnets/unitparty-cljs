@@ -1,55 +1,10 @@
 (ns unitparty.parser
   (:require [unitparty.unit :as unit]
-            [unitparty.unit.defs :refer (*units*)]
+            [unitparty.unit.defs :as defs]
             [clojure.string :as string]))
 
-(defn- parse-error [s] (throw (js/Error (str "Parse error: " s))))
-
-(defn- lex
-  "Return [next-token rest-of-string] or raise an error"
-  [s]
-  (let [tpat (fn [s] (re-pattern (str "^\\s*(" s ")(.*)"))) 
-
-        pats {:tunit  (tpat "[a-zA-Z]+")
-              :texpt  (tpat "\\^")
-              :tnum   (tpat "-?[0-9]+")
-              :topen  (tpat "\\(")
-              :tclose (tpat "\\)")
-              :top    (tpat "(/|\\*)")}
-        
-        gettok (fn [t [pn p]]
-                 (or t (let [r (re-find p s)]
-                         (when r [pn (nth r 1) (last r)]))))]
-
-    (or (reduce gettok nil pats)
-        (throw (js/Error (str "Lexical error: \"" s "\""))))))
-
-(defn- tokens
-  "Convert a unit string into a list of tokens or raise an error"
-  [s]
-  (when (not (string/blank? s))
-    (let [[tokt tokc remaining] (lex s)]
-      (conj (tokens remaining) [tokt tokc]))))
-
-
-(defn- group
-  "Parse raw token stream into nested sequences"
-  ([toks stack]
-   (cond
-     (= nil (first (first toks)))
-     (if (empty? (rest stack))
-       (first stack)
-       (parse-error "Unmatched '('"))
-     (= :topen (first (first toks))) (recur (rest toks) (conj stack []))
-     (= :tclose (first (first toks)))
-     (recur (rest toks)
-            (let [base (rest (rest stack))
-                  newtop (first (rest stack))]
-              (if (not (nil? newtop))
-                (conj base (conj newtop [:tgrp (first stack)]))
-                (parse-error "Unmatched ')'"))))
-     true (recur (rest toks) (conj (rest stack) (conj (first stack) (first toks))))))
-  ([toks] (group toks (list []))))
+;; helpers
+(defn- parse-error [& s] (throw (js/Error. (apply str "Parse error: " s))))
 
 (def metric-prefixes
   ;; prefixes -> magnitude
@@ -81,61 +36,83 @@
   "Read a sequence of metric prefixes and return a scaling factor and a base unit."
   ([s] (get-prefix-factor s 0))
   ([s fact]
-  (let [[m p r] (re-find prefix-regex s)]
-    (if m
-      (recur r (+ fact (metric-prefixes p)))
-      [fact s]))))
-(defn- get-unit
-  "unit name -> unit"
-  [u]
-  (or (*units* u)
-      (let [[mag s] (get-prefix-factor u)]
-        (when mag (unit/umul (get-unit s) {{} (Math/pow 10 mag)})))
-      (throw (js/Error (str "Unknown unit: " u)))))
+   (if-let [[m p r] (re-find prefix-regex s)]
+     (recur r (+ fact (metric-prefixes p)))
+     [s fact])))
+
+(defn- get-unit [u]
+  (or (and (map? u) u)
+      (defs/*units* (string/lower-case u))
+      (let [[s mag] (get-prefix-factor u)]
+        (when-not (= 0 mag)
+          (unit/umul (get-unit s) {{} (Math/pow 10 mag)})))
+      (parse-error "unknown unit: " u)))
 
 
-(declare expify)
-(defn- parse'
-  "Internal parser"
-  [t]
-  (let [[[tt1 tc1 :as t1] [tt2 tc2 :as t2] [tt3 tc3 :as t3] & ts] (expify t)]
-    (cond
+;; lexer
+(let [tpat #(re-pattern (str "^\\s*(" % ")(.*)"))]
+  (def lex-patterns
+    {::name  (tpat "[a-zA-Z-]+")
+     ::expt  (tpat "\\^")
+     ::num   (tpat "-?[0-9]+")
+     ::open  (tpat "\\(")
+     ::close (tpat "\\)")
+     ::op    (tpat "(/|\\*)")}))
 
-      (= tt1 :tgrp)
-      (recur (concat (list (parse' tc1) t2 t3) ts))
+(defn- lex1 [s]
+  (let [gettok (fn [t [tt pat]]
+                 (or t (when-let [r (re-find pat s)]
+                         [[tt (nth r 1)] (last r)])))]
+    (or (reduce gettok nil lex-patterns)
+        (throw (js/Error. (str "Lexical error: \"" s "\""))))))
 
-      (and  (= tt1 :tunit) (= tt2 :top))
-      (cond (= tt3 :tunit) (recur (conj ts [:tunit ((if (= tc2 "*") unit/umul unit/udiv) tc1 tc3)]))
-            (= tt3 :tgrp)  (recur (concat (list t1 t2 (parse' tc3)) ts))
-            true           (parse-error t))
+(defn- lex [s]
+  (when-not (string/blank? s)
+    (let [[tok remaining] (lex1 s)]
+      (conj (lex remaining) tok))))
 
-      (and (= tt1 :tunit) (not tt2))
-      t1
 
-      true (parse-error t))))
+;; Parser
+;;
+;; the parser uses multimethods to implement a state machine. this is a neat
+;; application for multimethods but it's somewhat frustrated by clojure's lack
+;; of TCO, as `recur' doesn't re-dispatch on new arguments (at least not in
+;; (this version of) clojurescript).
+(defmulti parse-tokens (comp first first))
 
-(defn- unify
-  "Convert unit tokens into units"
-  [[tt tc :as t]]
-  (condp = tt
-         :tunit [tt (get-unit tc)]
-         :tgrp  [tt (map unify tc)]
-         t))
+(defmethod parse-tokens ::name [[[_ uname] & toks]]
+  (parse-tokens (conj toks [::unit (get-unit uname)])))
 
-(defn- expify
-  "Parse unit exponentiation"
-  [[[tt1 tc1 :as t1] [tt2 tc2 :as t2] [tt3 tc3 :as t3] & ts :as t]]
-  (cond
+(defmethod parse-tokens ::unit [[[_ u :as tok] & toks]]
+  (let [[[tt tc :as nxt] & ntoks] toks]
+    (case tt
 
-      (empty? t) t
-      (and  (= tt1 :tunit) (= tt2 :texpt) (= tt3 :tnum))
-      (conj (expify ts) [:tunit (unit/uexp tc1 (js/Number tc3))])
+      ::op (let [[[_ nu] nntoks] (trampoline parse-tokens ntoks)
+                 op (if (= tc "*") unit/umul unit/udiv)] 
+             (recur (conj nntoks [::unit (op u nu)])))
 
-      (= tt1 :tgrp) (expify (conj (rest t) (parse' tc1)))
+      ::expt (let [[[tt' tc'] & nntoks] ntoks]
+               (if (= tt' ::num)
+                 (recur (conj nntoks [::unit (unit/uexp u (js/Number tc'))]))
+                 (parse-error "illegal exponent: " tc' " (" tt' ")")))
 
-      true (conj (expify (rest t)) t1)))
+      (::close nil) [tok toks] ; return toks, not ntoks, so the caller knows if
+                               ; we hit EOF
+
+      (parse-error "unexpected token: " nxt))))
+
+(defmethod parse-tokens ::open [[_ & toks]]
+  (let [[u ntoks] (trampoline parse-tokens toks)]
+    (if (empty? ntoks)
+      (parse-error "unmatched '('")
+      #(parse-tokens (conj (next ntoks) u)))))
+
+(defmethod parse-tokens :default [[t & toks]]
+  (parse-error "unexpected token: " t))
 
 (defn ^:export parse [s]
-  "Parse a string into a unit"
-  (->> s tokens group (map unify) expify parse' last))
+  (let [[[tt u :as t] ts] (trampoline parse-tokens (lex s))]
+    (cond (seq ts)            (parse-error "unmatched ')'")
+          (not (= ::unit tt)) (parse-error "unexpected token: " t) ; this should never happen
+          :else u)))
 

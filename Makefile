@@ -1,39 +1,35 @@
 NAME := unitparty
 DIST := dist
-TARG = target/dist
-TARGDIRS = $(addprefix $(TARG)/, js css)
+DISTDIRS = $(addprefix $(DIST)/, js css)
+LEINTARG = target/cljs/unitparty.js
 
-HTML = $(TARG)/$(NAME).html
-JS   = $(TARG)/js/$(NAME).js
-CSS  = $(TARG)/css/$(NAME).css
+HTML = $(DIST)/$(NAME).html
+JS   = $(DIST)/js/$(NAME).js
+CSS  = $(DIST)/css/$(NAME).css
 
-dist: $(TARGDIRS) $(HTML) $(JS) $(CSS)
-	@mv $(TARG) $(DIST)
+dist: $(DISTDIRS) $(HTML) $(JS) $(CSS)
 
 clean:
 	@rm -rf $(DIST)
 
-$(TARGDIRS):
+$(DISTDIRS):
 	@mkdir -p $@
 
 $(HTML): src/haml/$(NAME).haml
 	@echo "Compiling Haml."
 	@haml $< > $@
 
-html: $(HTML)
-css: $(CSS)
-js: $(JS)
-
 test:
 	@lein cljsbuild test
 
-$(CSS): src/scss/$(NAME).scss
-	@echo "Compiling SCSS."
-	@sass $< $@ > /dev/null
+$(CSS): src/css/$(NAME).css
+	@cp $< $@
 
-$(JS):
-# this is what lein is for
+$(LEINTARG):
 	@lein cljsbuild once prod
 
-.PHONY: dist clean html css js test
+$(JS): $(LEINTARG)
+	@cp $< $@
+
+.PHONY: dist clean
 

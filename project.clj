@@ -28,14 +28,14 @@
       :dev {
         :source-paths ["src/cljs"]
         :compiler {
-          :output-to "target/dev/unitparty-debug.js"
+          :output-to "target/cljs/unitparty-debug.js"
           :optimizations :whitespace
           :pretty-print  true }}
  
       :prod {
         :source-paths ["src/cljs"]
         :compiler {
-          :output-to "target/dist/js/unitparty.js"
+          :output-to "target/cljs/unitparty.js"
           :optimizations :advanced
           :pretty-print  false}}
  

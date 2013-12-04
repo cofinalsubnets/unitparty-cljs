@@ -7,6 +7,5 @@
      :refer (deftest testing is with-test run-tests test-var)]))
 
 (deftest units-map-tests
-  (is (seq *units*))
-  (is (seq *unique-units*)))
+  (is (seq *units*)))
 

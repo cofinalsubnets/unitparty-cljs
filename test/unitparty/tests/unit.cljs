@@ -24,11 +24,21 @@
 
     (let [convert (fn [a b c d] (unit/convert (parse a) (parse b) c d))]
       (testing "with explicit precision"
-        (is (= 100 (convert "fahrenheit" "celsius" 212 1)))))))
+        (is (= 100 (convert "fahrenheit" "celsius" 212 1)))))
+    
+    (testing "with metric prefixes"
+      (is (about 1000 (convert "kilomile" "mile" 1)))
+      (is (about 1000 (convert "megameter" "kilometre" 1)))
+      (is (about 1000 (convert "kilokiloinch" "kiloinch" 1))))
+
+    (testing "invalid conversions"
+      (is (thrown-with-msg? js/Error #"^Incommensurable units"
+                            (convert "milligrams" "megalux" 542))))))
 
 
 (deftest unit-stringification
   (let [rendered (fn [s u] (= s (unit/show-unit-dimensions (parse u))))]
     (is (rendered "length<sup>2</sup>" "mile*cable"))
-    (is (rendered "length<sup>6</sup>×time<sup>-2</sup>" "sverdrups^2"))))
+    (is (rendered "length<sup>6</sup>×time<sup>-2</sup>" "sverdrups^2"))
+    (is (rendered "dimensionless quantity" "hours/second"))))
 

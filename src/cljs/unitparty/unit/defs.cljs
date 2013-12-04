@@ -11,620 +11,1010 @@
       is       #(umul %2 (constant %1))
       shift    #(uadd %2 (constant %1))]
 
-  (defunits *units* *unique-units*
+  (defunits *units*
 
     ;; SI base units
     (kilogram
-     {:names ["kilogram" "kilograms"]
-      :info "SI base unit of mass."}
+     ["kilogram" "kilograms"]
+      "SI base unit of mass."
      (unit :mass))
     (second' ;; actually overriding second seems to break clojurescript
-     {:names ["second" "seconds"]
-      :info "SI base unit of time."}
+     ["second" "seconds"]
+      "SI base unit of time."
      (unit :time))
     (ampere
-      {:names ["ampere" "amperes" "amp" "amps"]
-       :info "SI base unit of current."}
+      ["ampere" "amperes" "amp" "amps"]
+       "SI base unit of current."
       (unit :current))
     (meter
-      {:names ["meter" "meters" "metre" "meters"]
-       :info "SI base unit of length."}
+      ["meter" "meters" "metre" "meters"]
+       "SI base unit of length."
       (unit :length))
     (candela
-      {:names ["candela" "candelas"]
-       :info "SI base unit of luminous intensity."}
+      ["candela" "candelas"]
+       "SI base unit of luminous intensity."
       (unit :luminous-intensity))
     (mole
-      {:names ["mole" "moles" "mol" "mols"]
-       :info "SI base unit of quantity."}
+      ["mole" "moles" "mol" "mols"]
+       "SI base unit of quantity."
       (unit :amount))
     (kelvin 
-      {:names ["kelvin" "kelvins"]
-       :info "SI base unit of temperature."}
+      ["kelvin" "kelvins"]
+       "SI base unit of temperature."
       (unit :temperature))
 
     ;; SI derived units
     (pascal
-      {:names ["pascal" "pascals"]
-       :info  "SI derived unit of pressure."}
+      ["pascal" "pascals"]
+       "SI derived unit of pressure."
       (umul kilogram (umul (uexp meter -1) (uexp second' -2))))
     (celsius
-      {:names ["celsius"]
-       :info  "SI derived unit of temperature."}
+      ["celsius"]
+       "SI derived unit of temperature."
       (shift -273.15 kelvin))
     (hertz
-      {:names ["hertz" "hz"]
-       :info  "SI derived unit of frequency."}
+      ["hertz" "hz"]
+       "SI derived unit of frequency."
       (uneg second'))
     (newton
-      {:names ["newton" "newtons"]
-       :info  "SI derived unit of force."}
+      ["newton" "newtons"]
+       "SI derived unit of force."
       (umul kilogram (udiv meter (uexp second' 2))))
     (joule
-      {:names ["joule" "joules"]
-       :info  "SI derived unit of energy."}
+      ["joule" "joules"]
+       "SI derived unit of energy."
       (umul newton meter))
     (watt
-      {:names ["watt" "watts"]
-       :info  "SI derived unit of power."}
+      ["watt" "watts"]
+       "SI derived unit of power."
       (udiv joule second'))
     (coulomb
-      {:names ["coulomb" "coulombs"]
-       :info  "SI derived unit of electrical charge."}
+      ["coulomb" "coulombs"]
+       "SI derived unit of electrical charge."
       (umul ampere second'))
     (volt
-      {:names ["volt" "volts"]
-       :info  "SI derived unit of electrical potential."}
+      ["volt" "volts"]
+       "SI derived unit of electrical potential."
       (udiv watt ampere))
     (farad
-      {:names ["farad" "farads"]
-       :info  "SI derived unit of electrical capacitance."}
+      ["farad" "farads"]
+       "SI derived unit of electrical capacitance."
       (udiv coulomb volt))
     (ohm
-      {:names ["ohm" "ohms"]
-       :info  "SI derived unit of electrical resistance."}
+      ["ohm" "ohms"]
+       "SI derived unit of electrical resistance."
       (udiv volt ampere))
     (siemens
-      {:names ["siemens" "mho" "mhos"]
-       :info  "SI derived unit of electrical conductance."}
+      ["siemens" "mho" "mhos"]
+       "SI derived unit of electrical conductance."
       (uneg ohm))
     (weber
-      {:names ["weber" "webers"]
-       :info  "SI derived unit of magnetic flux."}
+      ["weber" "webers"]
+       "SI derived unit of magnetic flux."
       (udiv joule ampere))
     (tesla
-      {:names ["tesla" "teslas"]
-       :info  "SI derived unit of magnetic flux density."}
+      ["tesla" "teslas"]
+       "SI derived unit of magnetic flux density."
       (udiv weber (uexp meter 2)))
     (henry
-      {:names ["henry" "henrys" "henries"]
-       :info  "SI derived unit of inductance."}
+      ["henry" "henrys" "henries"]
+       "SI derived unit of inductance."
       (umul ohm second'))
     (lux
-      {:names ["lux"]
-       :info  "SI derived unit of illuminance."}
+      ["lux"]
+       "SI derived unit of illuminance."
       (udiv candela (uexp meter 2)))
     (gray
-      {:names ["gray" "grays"]
-       :info  "SI derived unit of absorbed dose of radiation."}
+      ["gray" "grays"]
+       "SI derived unit of absorbed dose of radiation."
       (udiv joule kilogram))
     (sievert
-      {:names ["sievert" "sieverts"]
-       :info  "SI derived unit of equivalent dose of radiation."}
+      ["sievert" "sieverts"]
+       "SI derived unit of equivalent dose of radiation."
       gray)
     (katal
-      {:names ["katal" "katals"]
-       :info  "SI derived unit of catalytic activity."}
+      ["katal" "katals"]
+       "SI derived unit of catalytic activity."
       (udiv mole second'))
     (becquerel
-      {:names ["becquerel" "becquerels"]
-       :info  "SI derived unit of radioactivity."}
+      ["becquerel" "becquerels"]
+       "SI derived unit of radioactivity."
       hertz)
     (lumen
-      {:names ["lumen" "lumens"]
-       :info  "SI derived unit of luminous flux."}
+      ["lumen" "lumens"]
+       "SI derived unit of luminous flux."
       candela)
       
     ;; mass
     (gram
-      {:names ["gram" "grams" ]
-       :info "Metric unit of mass."}
+      ["gram" "grams" ]
+       "Metric unit of mass."
       (is (/ 1 1000) kilogram))
     (pound
-      {:names ["pound" "pounds" "lb" "lbs"]
-       :info "Customary unit of mass."}
+      ["pound" "pounds" "lb" "lbs"]
+       "Customary unit of mass."
       (is 0.45359238 kilogram))
     (dalton
-      {:names ["dalton" "daltons" "amu" "amus"]
-       :info "Unit of atomic mass."}
+      ["dalton" "daltons" "amu" "amus"]
+       "Unit of atomic mass."
       (is (* 1.66053886 (Math/pow 10 -27)) kilogram))
     (tonne
-      {:names ["tonne" "tonnes"]
-       :info "SI unit of mass."}
+      ["tonne" "tonnes"]
+       "SI unit of mass."
       (is 1000 kilogram))
     (carat
-      {:names ["carat" "carats"]
-       :info "Unit of mass used for measuring gemstones. Originally derived from the weight of a carob seed."}
+      ["carat" "carats"]
+       "Unit of mass used for measuring gemstones. Originally derived from the weight of a carob seed."
       (is (/ 1 5000) kilogram))
     (grain
-      {:names ["grain" "grains"]
-       :info "Apothecaries' unit of mass historically based on the weight of a seed of a cereal grain."}
+      ["grain" "grains"]
+       "Apothecaries' unit of mass historically based on the weight of a seed of a cereal grain."
       (is 0.0648 gram))
     (scruple
-      {:names ["scruple" "scruples"]
-       :info "Apothecaries' unit of mass."}
+      ["scruple" "scruples"]
+       "Apothecaries' unit of mass."
       (is 20 grain))
     (dram
-      {:names ["dram" "drams" "drachm" "drachms"]
-       :info "Apothecaries' unit of mass."}
+      ["dram" "drams" "drachm" "drachms"]
+       "Apothecaries' unit of mass."
       (is 60 grain))
     (ounce
-      {:names ["ounce" "ounces" "oz"]
-       :info "Customary unit of mass."}
+      ["ounce" "ounces" "oz"]
+       "Customary unit of mass."
       (is (/ 1 16) pound))
     (stone
-      {:names ["stone"]
-       :info "Imperial unit of mass common in Great Britain and Ireland."}
+      ["stone"]
+       "Imperial unit of mass common in Great Britain and Ireland."
       (is 14 pound))
     (shekel
-      {:names ["shekel" "shekels"]
-       :info "Ancient Mesopotamian unit of mass (and currency)."}
+      ["shekel" "shekels"]
+       "Ancient Mesopotamian unit of mass (and currency)."
       (is 180 grain))
     (quarter
-      {:names ["quarter" "quarters"]
-       :info "Imperial unit of mass."}
+      ["quarter" "quarters"]
+       "Imperial unit of mass."
       (is 2 stone))
     (hundredweight
-      {:names ["hundredweight" "hundredweights"]
-       :info "Imperial unit of mass."}
+      ["hundredweight" "hundredweights"]
+       "Imperial unit of mass."
       (is 4 quarter))
     (wey
-      {:names ["wey" "weys"]
-       :info  "An archaic British unit of mass."}
+      ["wey" "weys"]
+       "An archaic British unit of mass."
       (is 2 hundredweight))
     (ton
-      {:names ["ton" "tons"]
-       :info "Imperial unit of mass."}
+      ["ton" "tons"]
+       "Imperial unit of mass."
       (is 20 hundredweight))
+    (long-ton
+      ["long-ton" "long-tons"]
+       "Imperial unit of mass."
+      ton)
+    (short-ton
+      ["short-ton" "short-tons"]
+       "Imperial unit of mass."
+      (is 2000 pound))
     (pennyweight
-      {:names ["pennyweight" "pennyweights"]
-       :info "The mass of a Middle Ages British penny."}
+      ["pennyweight" "pennyweights"]
+       "The mass of a Middle Ages British penny."
       (is 24 grain))
     (quintil
-      {:names ["quintil" "quintils"]
-       :info "Unit of mass used used to measure French wine grape production."}
+      ["quintil" "quintils"]
+       "Unit of mass used used to measure French wine grape production."
       (is 100 ton))
     (earth
-      {:names ["earth" "earths"]
-       :info "The mass of Earth."}
+      ["earth" "earths"]
+       "The mass of Earth."
       (is (* 5.97219 (Math/pow 10 24)) kilogram))
     (sun
-      {:names ["sun" "suns" "solar-mass" "solar-masses"]
-       :info "One solar mass."}
+      ["sun" "suns" "solar-mass" "solar-masses"]
+       "One solar mass."
       (is 332946 earth))
     (mercury
-      {:names ["mercury" "mercuries"]
-       :info "The mass of Mercury."}
+      ["mercury" "mercuries"]
+       "The mass of Mercury."
       (is 0.055 earth))
     (venus
-      {:names ["venus" "venuses" "veni"]
-       :info "The mass of Venus."}
+      ["venus" "venuses" "veni"]
+       "The mass of Venus."
       (is 0.815 earth))
     (moon
-      {:names ["moon" "moons"]
-       :info "One lunar mass."}
+      ["moon" "moons"]
+       "One lunar mass."
       (is 0.0123 earth))
     (mars
-      {:names ["mars" "marses"]
-       :info "The mass of Mars."}
+      ["mars" "marses"]
+       "The mass of Mars."
       (is 0.107 earth))
     (jupiter
-      {:names ["jupiter" "jupiters"]
-       :info  "The mass of Jupiter."}
+      ["jupiter" "jupiters"]
+       "The mass of Jupiter."
       (is 317.8 earth))
     (saturn
-      {:names ["saturn" "saturns"]
-       :info  "The mass of Saturn."}
+      ["saturn" "saturns"]
+       "The mass of Saturn."
       (is 95.16 earth))
     (uranus
-      {:names ["uranus" "uranuses" "urani"]
-       :info  "The mass of Uranus."}
+      ["uranus" "uranuses" "urani"]
+       "The mass of Uranus."
       (is 14.536 earth))
     (neptune
-      {:names ["neptune" "neptunes"]
-       :info  "The mass of Neptune."}
+      ["neptune" "neptunes"]
+       "The mass of Neptune."
       (is 17.147 earth))
     (pluto
-      {:names ["pluto" "plutos"]
-       :info  "The mass of Pluto, the best dwarf planet out there."}
+      ["pluto" "plutos"]
+       "The mass of Pluto, the best dwarf planet out there."
       (is 0.00218 earth))
+    (libra
+      ["libra" "librae"]
+       "A Roman unit of mass."
+      (is 328.9 gram))
+    (deunx
+      ["deunx"]
+       "A Roman unit of mass."
+      (is (/ 11 12) libra))
+    (dextans
+      ["dextans"]
+       "A Roman unit of mass."
+      (is (/ 5 6) libra))
+    (dodrans
+      ["dodrans"]
+       "A Roman unit of mass."
+      (is (/ 3 4) libra))
+    (bes
+      ["bes" "besis"]
+       "A Roman unit of mass."
+      (is (/ 2 3) libra))
+    (septunx
+      ["septunx"]
+       "A Roman unit of mass."
+      (is (/ 7 12) libra))
+    (semis
+      ["semis" "semissis"]
+       "A Roman unit of mass."
+      (is (/ 1 2) libra))
+    (quincunx
+      ["quincunx"]
+       "A Roman unit of mass."
+      (is (/ 5 12) libra))
+    (triens
+      ["triens"]
+       "A Roman unit of mass."
+      (is (/ 1 3) libra))
+    (quadrans
+      ["quadrans" "teruncius"]
+       "A Roman unit of mass."
+      (is (/ 1 4) libra))
+    (sextans
+      ["sextans"]
+       "A Roman unit of mass."
+      (is (/ 1 6) libra))
+    (sescunx
+      ["sescunx" "sescuncia"]
+       "A Roman unit of mass."
+      (is (/ 1 8) libra))
+    (uncia
+      ["uncia" "unciae"]
+       "A Roman unit of mass."
+      (is (/ 1 12) libra))
+    (siliqua
+      ["siliqua" "siliquae"]
+       "A Roman unit of mass."
+      (is (/ 1 144) uncia))
+    (obolus
+      ["obolus" "oboli"]
+       "A Roman unit of mass."
+      (is (/ 1 48) uncia))
+    (scrupulum
+      ["scrupulum" "scrupula"]
+       "A Roman unit of mass."
+      (is (/ 1 24) uncia))
+    (semisextula
+      ["semisextula" "semisextulae"]
+       "A Roman unit of mass."
+      (is (/ 1 12) uncia))
+    (sextula
+      ["sextula" "sextulae"]
+       "A Roman unit of mass."
+      (is (/ 1 6) uncia))
+    (sicilicius
+      ["sicilicius" "sicilicii"]
+       "A Roman unit of mass."
+      (is (/ 1 4) uncia))
+    (duella
+      ["duella" "duellae"]
+       "A Roman unit of mass."
+      (is (/ 1 3) uncia))
+    (semuncia
+      ["semuncia" "semunciae"]
+       "A Roman unit of mass."
+      (is (/ 1 2) uncia))
+    
 
     ;; volume
     (liter
-      {:names ["litre" "liter" "litres" "liters"]
-       :info "Metric unit of volume."}
+      ["litre" "liter" "litres" "liters"]
+       "Metric unit of volume."
       (is 0.001 (uexp meter 3)))
     (fluid-ounce
-      {:names ["fluid-ounce" "fluid-ounces" "floz"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["fluid-ounce" "fluid-ounces" "floz"]
+       "An Imperial and Customary unit of volume."
       (is 0.0284130625 liter))
     (gill
-      {:names ["gill" "gills" "gi"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["gill" "gills" "gi"]
+       "An Imperial and Customary unit of volume."
       (is 5 fluid-ounce))
     (pint
-      {:names ["pint" "pints"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["pint" "pints"]
+       "An Imperial and Customary unit of volume."
       (is 4 gill))
     (quart
-      {:names ["quart" "quarts"]
-       :info  "An Impoerial and Customary unit of volume."}
+      ["quart" "quarts"]
+       "An Imperial and Customary unit of volume."
       (is 2 pint))
     (gallon
-      {:names ["gallon" "gallons" "ga"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["gallon" "gallons" "ga"]
+       "An Imperial and Customary unit of volume."
       (is 4 quart))
     (fluid-dram
-      {:names ["fluid-dram" "fluid-drams" "fluid-drachm" "fluid-drachms"]
-       :info  "Apothecaries' unit of volume."}
+      ["fluid-dram" "fluid-drams" "fluid-drachm" "fluid-drachms"]
+       "Apothecaries' unit of volume."
       (is (/ 1 8) fluid-ounce))
     (fluid-scruple
-      {:names ["fluid-scruple" "fluid-scruples"]
-       :info  "Apothecaries' unit of volume."}
+      ["fluid-scruple" "fluid-scruples"]
+       "Apothecaries' unit of volume."
       (is (/ 1 3) fluid-dram))
     (minim
-      {:names ["minim" "minims"]
-       :info  "Apothecaries' unit of volume."}
+      ["minim" "minims"]
+       "Apothecaries' unit of volume."
       (is (/ 1 20) fluid-scruple))
     (teaspoon
-      {:names ["teaspoon" "teaspoons" "tsp"]
-       :info  "A common culinary unit of volume."}
+      ["teaspoon" "teaspoons" "tsp"]
+       "A common culinary unit of volume."
       (is 1 fluid-dram))
     (tablespoon
-      {:names ["tablespoon" "tablespoons" "tbsp"]
-       :info  "A common culinary unit of volume."}
+      ["tablespoon" "tablespoons" "tbsp"]
+       "A common culinary unit of volume."
       (is 3 teaspoon))
     (dessertspoon
-      {:names ["dessertspoon" "dessertspoons" "dstspn"]
-       :info  "A less common culinary unit of volume."}
+      ["dessertspoon" "dessertspoons" "dstspn"]
+       "A less common culinary unit of volume."
       (is 2 teaspoon))
     (tun
-      {:names ["tun" "tuns"]
-       :info  "An English wine cask unit."}
+      ["tun" "tuns"]
+       "An English wine cask unit."
       (is 252 gallon))
     (pipe
-      {:names ["pipe" "pipes" "butt" "butts"]
-       :info  "An English wine cask unit."}
+      ["pipe" "pipes" "butt" "butts"]
+       "An English wine cask unit."
       (is (/ 1 2) tun))
     (puncheon
-      {:names ["puncheon" "puncheons" "tertian" "tertians"]
-       :info  "An English wine cask unit."}
+      ["puncheon" "puncheons" "tertian" "tertians"]
+       "An English wine cask unit."
       (is (/ 1 3) tun))
     (hogshead
-      {:names ["hogshead" "hogsheads"]
-       :info  "An English wine cask unit."}
+      ["hogshead" "hogsheads"]
+       "An English wine cask unit."
       (is (/ 1 4) tun))
     (tierce
-      {:names ["tierce" "tierces"]
-       :info  "An English wine cask unit."}
+      ["tierce" "tierces"]
+       "An English wine cask unit."
       (is (/ 1 6) tun))
     (barrel
-      {:names ["barrel" "barrels"]
-       :info  "An English wine cask unit."}
+      ["barrel" "barrels"]
+       "An English wine cask unit."
       (is (/ 1 8) tun))
     (rundlet
-      {:names ["rundlet" "rundlets"]
-       :info  "An English wine cask unit."}
+      ["rundlet" "rundlets"]
+       "An English wine cask unit."
       (is (/ 1 14) tun))
     (kilderkin
-      {:names ["kilderkin" "kilderkins"]
-       :info  "An English brewery cask unit."}
+      ["kilderkin" "kilderkins"]
+       "An English brewery cask unit."
       (is 83.18 liter))
     (firkin
-      {:names ["firkin" "firkins"]
-       :info  "An English brewery cask unit."}
+      ["firkin" "firkins"]
+       "An English brewery cask unit."
       (is (/ 1 2) kilderkin))
     (pin
-      {:names ["pin" "pins"]
-       :info  "An English brewery cask unit."}
+      ["pin" "pins"]
+       "An English brewery cask unit."
       (is (/ 1 2) firkin))
     (peck
-      {:names ["peck" "pecks"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["peck" "pecks"]
+       "An Imperial and Customary unit of volume."
       (is 2 gallon))
     (kenning
-      {:names ["kenning" "kennings"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["kenning" "kennings"]
+       "An Imperial and Customary unit of volume."
       (is 2 peck))
     (bushel
-      {:names ["bushel" "bushels"]
-       :info  "An Imperial and Customary unit of volume."}
+      ["bushel" "bushels"]
+       "An Imperial and Customary unit of volume."
       (is 2 kenning))
     (hobbit
-      {:names ["hobbit" "hobbits"]
-       :info  "A Welsh unit of volume (and sometimes mass). Really!."}
+      ["hobbit" "hobbits"]
+       "A Welsh unit of volume (and sometimes mass). Really!"
       (is 2.5 bushel))
+    (kochliarion
+      ["kochliarion" "kochliaria"]
+       "An ancient Greek unit of volume."
+      (is 0.0045 liter))
+    (xeme
+      ["xeme"]
+       "An ancient Greek unit of volume."
+      (is 2 kochliarion))
+    (mustron
+      ["mustron" "mustra"]
+       "An ancient Greek unit of volume."
+      (is 2.5 kochliarion))
+    (konche
+      ["konche"]
+       "An ancient Greek unit of volume."
+      (is 5 kochliarion))
+    (kyathos
+      ["kyathos" "kyathoi"]
+       "An ancient Greek unit of volume."
+      (is 10 kochliarion))
+    (oxybathon
+      ["oxybathon" "oxybatha"]
+       "An ancient Greek unit of volume."
+      (is 1.5 kyathos))
+    (tetarton
+      ["tetarton" "tetarta"]
+       "An ancient Greek unit of volume."
+      (is 3 kyathos))
+    (kotyle
+      ["kotyle"]
+       "An ancient Greek unit of volume."
+      (is 6 kyathos))
+    (xestes
+      ["xestes"]
+       "An ancient Greek unit of liquid volume."
+      (is 12 kyathos))
+    (chous
+      ["chous" "choes"]
+       "An ancient Greek unit of liquid volume."
+      (is 72 kyathos))
+    (keramion
+      ["keramion" "keramia"]
+       "An ancient Greek unit of liquid volume."
+      (is 8 chous))
+    (metretes
+      ["metretes"]
+       "An ancient Greek unit of liquid volume."
+      (is 12 chous))
+    (choinix
+      ["choinix" "choinikes"]
+       "An ancient Greek unit of dry volume."
+      (is 24 kyathos))
+    (hemiekton
+      ["hemiekton" "hemiekta"]
+       "An ancient Greek unit of dry volume."
+      (is 4 choinix))
+    (hecteus
+      ["hecteus"]
+       "An ancient Greek unit of dry volume."
+      (is 8 choinix))
+    (medimnos
+      ["medimnos"]
+       "An ancient Greek unit of dry volume."
+      (is 48 choinix))
+    (sextarius
+      ["sextarius" "sextarii"]
+       "The basis for ancient Roman units of volume."
+      (is 0.546 liter))
+    (ligula
+      ["ligula" "ligulae"]
+       "A Roman unit of volume."
+      (is (/ 1 48) sextarius))
+    (cyathus
+      ["cyathus" "cyathi"]
+       "A Roman unit of volume."
+      (is (/ 1 12) sextarius))
+    (acetabulum
+      ["acetabulum" "acetabula"]
+       "A Roman unit of volume."
+      (is (/ 1 8) sextarius))
+    (quartarius
+      ["quartarius" "quartarii"]
+       "A Roman unit of volume."
+      (is (/ 1 4) sextarius))
+    (hemina
+      ["hemina" "heminae"]
+       "A Roman unit of volume."
+      (is (/ 1 2) sextarius))
+    (congius
+      ["congius" "congii"]
+       "A Roman unit of liquid volume."
+      (is 6 sextarius))
+    (urna
+      ["urna" "urnae"]
+       "A Roman unit of liquid volume."
+      (is 4 congius))
+    (amphora-quadrantal
+      ["amphora-quadrantal"]
+       "A Roman unit of liquid volume."
+      (is 8 congius))
+    (culeus
+      ["culeus" "culei"]
+       "A Roman unit of liquid volume."
+      (is 160 congius))
+    (semimodius
+      ["semimodius" "semimodii"]
+       "A Roman unit of dry volume."
+      (is 8 sextarius))
+    (modius
+      ["modius" "modii"]
+       "A Roman unit of dry volume."
+      (is 16 sextarius))
+
 
     ;; length
     (planck-length
-      {:names ["planck-length" "planck-lengths"]
-       :info  "An appallingly tiny distance significant in theoretical physics."}
+      ["planck-length" "planck-lengths"]
+       "An appallingly tiny distance significant in theoretical physics."
       (is (* 1.616199 (Math/pow 10 -35)) meter))
     (foot
-      {:names ["foot" "feet" "ft"]
-       :info  "An Imperial and Customary unit of length."}
+      ["foot" "feet" "ft"]
+       "An Imperial and Customary unit of length."
       (is 0.3048 meter))
     (inch
-      {:names ["inch" "inches"]
-       :info  "An Imperial and Customary unit of length."}
+      ["inch" "inches"]
+       "An Imperial and Customary unit of length."
       (is (/ 1 12) foot))
     (yard
-      {:names ["yard" "yards"]
-       :info  "An Imperial and Customary unit of length."}
+      ["yard" "yards"]
+       "An Imperial and Customary unit of length."
       (is 3 foot))
     (chain
-      {:names ["chain" "chains"]
-       :info  "An Imperial and Customary unit of length."}
+      ["chain" "chains"]
+       "An Imperial and Customary unit of length."
       (is 22 yard))
     (link
-      {:names ["link" "links"]
-       :info  "An Imperial and Customary unit of length."}
+      ["link" "links"]
+       "An Imperial and Customary unit of length."
       (is (/ 1 100) chain))
     (rod
-      {:names ["rod" "rods"]
-       :info "An Imperial and Customary unit of length."}
+      ["rod" "rods"]
+       "An Imperial and Customary unit of length."
       (is (/ 1 4) chain))
     (furlong
-      {:names ["furlong" "furlongs"]
-       :info  "An Imperial and Customary unit of length."}
+      ["furlong" "furlongs"]
+       "An Imperial and Customary unit of length."
       (is 10 chain))
     (mile
-      {:names ["mile" "miles"]
-       :info  "An Imperial and Customary unit of length."}
+      ["mile" "miles"]
+       "An Imperial and Customary unit of length."
       (is 8 furlong))
     (league
-      {:names ["league" "leagues"]
-       :info  "An Imperial and Customary unit of length."}
+      ["league" "leagues"]
+       "An Imperial and Customary unit of length."
       (is 3 mile))
     (fathom
-      {:names ["fathom" "fathoms"]
-       :info  "A nautical unit of length."}
+      ["fathom" "fathoms"]
+       "A nautical unit of length."
       (is 2 yard))
     (cable
-      {:names ["cable" "cables"]
-       :info  "A nautical unit of length."}
+      ["cable" "cables"]
+       "A nautical unit of length."
       (is 100 fathom))
     (nautical-mile
-      {:names ["nautical-mile" "nautical-miles"]
-       :info  "A nautical unit of length."}
+      ["nautical-mile" "nautical-miles"]
+       "A nautical unit of length."
       (is 10 cable))
     (cubit
-      {:names ["cubit" "cubits"]
-       :info  "An ancient unit of length, representing the distance from the elbow to the tip of the middle finger."}
+      ["cubit" "cubits"]
+       "An ancient unit of length, representing the distance from the elbow to the tip of the middle finger."
       (is 18 inch))
     (ell
-      {:names ["ell" "ells"]
-       :info  "A unit of length used in English tailoring; at other times, identical to the cubit."}
+      ["ell" "ells"]
+       "A unit of length used in English tailoring; at other times, identical to the cubit."
       (is 45 inch))
     (finger
-      {:names ["finger" "fingers"]
-       :info  "A unit of length based on the width of a human finger."}
+      ["finger" "fingers"]
+       "A unit of length based on the width of a human finger."
       (is (/ 7 8) inch))
      (fermi
-       {:names ["fermi" "fermis"]
-        :info  "An SI unit of length equivalent to one femtometer. Named for Enrico Fermi."}
+       ["fermi" "fermis"]
+        "An SI unit of length equivalent to one femtometer. Named for Enrico Fermi."
        (is (Math/pow 10 -15) meter))
      (micron
-       {:names ["micron" "microns"]
-        :info  "An SI unit of length equivalent to one micrometer."}
+       ["micron" "microns"]
+        "An SI unit of length equivalent to one micrometer."
        (is (Math/pow 10 -6) meter))
     (thou
-      {:names ["thou" "thous"]
-       :info  "A unit of length used in engineering and manufacturing."}
+      ["thou" "thous"]
+       "A unit of length used in engineering and manufacturing."
       (is (/ 1 1000) inch))
     (mil
-      {:names ["mil" "mils"]
-       :info  "A unit of length used in engineering and manufacturing."}
+      ["mil" "mils"]
+       "A unit of length used in engineering and manufacturing."
       (is (/ 1 1000) inch))
     (hand
-      {:names ["hand" "hands"]
-       :info  "A unit of length currently used for measuring the height of horses."}
+      ["hand" "hands"]
+       "A unit of length currently used for measuring the height of horses."
       (is 0.1016 meter))
 
     (angstrom
-      {:names ["angstrom" "angstroms"]
-       :info  "An atomic-scale unit of length."}
+      ["angstrom" "angstroms"]
+       "An atomic-scale unit of length."
       (is (Math/pow 10 -10) meter))
     (light-year
-      {:names ["light-year" "light-years"]
-       :info  "The distance traveled by light in a vacuum in one Julian year."}
+      ["light-year" "light-years"]
+       "The distance traveled by light in a vacuum in one Julian year."
       (is (* 9.4607 (Math/pow 10 15)) meter))
     (parsec
-      {:names ["parsec" "parsecs"]
-       :info  "PARallax of one arcSECond. A unit of distance used in astronomy."}
+      ["parsec" "parsecs"]
+       "PARallax of one arcSECond. A unit of distance used in astronomy."
       (is 3.26156 light-year))
     (astronomical-unit
-      {:names ["astronomical-unit" "astronomical-units"]
-       :info  "The distance from the Earth to the Sun."}
+      ["astronomical-unit" "astronomical-units"]
+       "The distance from the Earth to the Sun."
       (is 149597870700 meter))
+    (barleycorn
+      ["barleycorn" "barleycorns"]
+       "An archaic Anglo-Saxon unit of length."
+      (is (/ 1 3) inch))
+    (palm
+      ["palm" "palms"]
+       "An archaic Anglo-Saxon unit of length."
+      (is 0.0726 meter))
+    (shaftment
+      ["shaftment" "shaftments"]
+       "An archaic Anglo-Saxon unit of length."
+      (is 2 palm))
+    (bahar
+      ["bahar" "bahars"]
+       "An obsolete Persian unit of length."
+      (is 0.0325 meter))
+    (cana
+      ["cana" "canas"]
+       "An archaic unit of length used in the Crown of Aragon."
+      (is 1.5708 meter))
+    (smoot
+      ["smoot" "smoots"]
+       "The height of Oliver R. Smoot in 1958."
+      (is 67 inch))
+    (jow
+      ["jow" "jows"]
+       "An obsolete Indian unit of length."
+      (is (/ 1 4) inch))
+    (daktylos
+      ["daktylos" "daktyloi"]
+       "An ancient Greek unit of length. Supposed to represent the width of one finger."
+      (is 0.76 inch))
+    (kondylos
+      ["kondylos" "kondyloi"]
+       "An ancient Greek unit of length."
+      (is 2 daktylos))
+    (doron
+      ["doron" "dora"]
+       "An ancient Greek unit of length. Supposed to represent the width of one palm."
+      (is 4 daktylos))
+    (palaiste
+      ["palaiste"]
+       "An ancient Greek unit of length."
+      doron)
+    (hemipodion
+      ["hemipodion" "hemipodia"]
+       "An ancient Greek unit of length."
+      (is 8 daktylos))
+    (dichas
+      ["dichas"]
+       "An ancient Greek unit of length."
+      hemipodion)
+    (lichas
+      ["lichas"]
+       "An ancient Greek unit of length."
+      (is 10 daktylos))
+    (orthodoron
+      ["orthodoron" "orthodora"]
+       "An ancient Greek unit of length."
+      (is 11 daktylos))
+    (spithame
+      ["spithame"]
+       "An ancient Greek unit of length. Supposed to represent the width of all of one person's fingers."
+      (is 12 daktylos))
+    (pous
+      ["pous" "podes"]
+       "An ancient Greek unit of length. Supposed to represent the length of one foot."
+      (is 16 daktylos))
+    (pygme
+      ["pygme"]
+       "An ancient Greek unit of length."
+      (is 18 daktylos))
+    (pygon
+      ["pygon" "pyga"]
+       "An ancient Greek unit of length."
+      (is 20 daktylos))
+    (pechys
+      ["pechys"]
+       "An ancient Greek unit of length."
+      (is 24 daktylos))
+    (orgyia
+      ["orgyia"]
+       "An ancient Greek unit of length."
+      (is 6 pous))
+    (dekapous
+      ["dekapous" "dekapodes"]
+       "An ancient Greek unit of length."
+      (is 10 pous))
+    (hamma
+      ["hamma"]
+       "An ancient Greek unit of length."
+      (is 60 pous))
+    (plethron
+      ["plethron" "plethra"]
+       "An ancient Greek unit of length."
+      (is 100 pous))
+    (stadion
+      ["stadion" "stadia"]
+       "An ancient Greek unit of length."
+      (is 600 pous))
+    (diaulos
+      ["diaulos"]
+       "An ancient Greek unit of length."
+      (is 2 stadion))
+    (hippikon
+      ["hippikon" "hippika"]
+       "An ancient Greek unit of length."
+      (is 4 stadion))
+    (milion
+      ["milion" "milia"]
+       "An ancient Greek unit of length."
+      (is 8 stadion))
+    (dolichos
+      ["dolichos"]
+       "An ancient Greek unit of length."
+      (is 12 stadion))
+    (parasanges
+      ["parasanges"]
+       "An ancient Greek unit of length."
+      (is 30 stadion))
+    (schoinos
+      ["schoinos"]
+       "An ancient Greek unit of length."
+      (is 40 stadion))
+    (stage
+      ["stage" "stages"]
+       "An ancient Greek unit of length."
+      (is 160 stadion))
 
     ;; area
     (perch
-      {:names ["perch" "perches"]
-       :info  "An Imperial and Customary unit of area."}
+      ["perch" "perches"]
+       "An Imperial and Customary unit of area."
       (uexp rod 2))
     (rood
-      {:names ["rood" "roods"]
-       :info  "An Imperial and Customary unit of area."}
+      ["rood" "roods"]
+       "An Imperial and Customary unit of area."
       (umul furlong rod))
     (acre
-      {:names ["acre" "acres"]
-       :info  "An Imperial and Customary unit of area."}
+      ["acre" "acres"]
+       "An Imperial and Customary unit of area."
       (umul furlong chain))
     (section
-      {:names ["section" "sections"]
-       :info  "A unit of area used in surveying."}
+      ["section" "sections"]
+       "A unit of area used in surveying."
       (is 640 acre))
     (township
-      {:names ["township" "townships"]
-       :info  "A unit of area used in surveying."}
+      ["township" "townships"]
+       "A unit of area used in surveying."
       (is 36 section))
     (are
-      {:names ["are" "ares"]
-       :info  "An obsolete metric unit of area."}
+      ["are" "ares"]
+       "An obsolete metric unit of area."
       (is 100 (uexp meter 2)))
     (decare
-      {:names ["decare" "decares"]
-       :info  "An obsolete metric unit of area."}
+      ["decare" "decares"]
+       "An obsolete metric unit of area."
       (is 10 are))
     (hectare
-      {:names ["hectare" "hectares"]
-       :info  "A metric unit of area."}
+      ["hectare" "hectares"]
+       "A metric unit of area."
       (is 100 are))
     (dunam
-      {:names ["dunam" "dunams"]
-       :info  "An Ottoman unit of area, representing the amount of land that can be plowed by one person in one day."}
+      ["dunam" "dunams"]
+       "An Ottoman unit of area, representing the amount of land that can be plowed by one person in one day."
       decare)
     (marabba
-      {:names ["marabba" "marabbas"]
-       :info  "A Pakistani unit of area."}
+      ["marabba" "marabbas"]
+       "A Pakistani unit of area."
       (is 25 acre))
     (jareeb
-      {:names ["jareeb" "jareebs"]
-       :info  "A Pakistani unit of area."}
+      ["jareeb" "jareebs"]
+       "A Pakistani unit of area."
       (is (/ 1 10) acre))
     (kanee
-      {:names ["kanee" "kanees"]
-       :info  "A Pakistani unit of area."}
+      ["kanee" "kanees"]
+       "A Pakistani unit of area."
       (is 4 jareeb))
     (guntha
-      {:names ["guntha" "gunthas"]
-       :info  "A Pakistani unit of area."}
+      ["guntha" "gunthas"]
+       "A Pakistani unit of area."
       (is (/ 1 4) jareeb))
     (anna
-      {:names ["anna" "annas"]
-       :info  "A Pakistani unit of area."}
+      ["anna" "annas"]
+       "A Pakistani unit of area."
       (is (/ 1 6) guntha))
+    (barn
+      ["barn" "barns"]
+       "A measure of area used in particle physics."
+      (is (Math/pow 10 -28) (uexp meter 2)))
 
     ;; pressure
     (bar
-      {:names ["bar" "bars"]
-       :info  "A non-SI unit of pressure."}
+      ["bar" "bars"]
+       "A non-SI unit of pressure."
       (is 100000 pascal))
     (barye
-      {:names ["barye" "baryes"]
-       :info  "A non-SI unit of pressure."}
+      ["barye" "baryes"]
+       "A non-SI unit of pressure."
       (is (/ 1 10) pascal))
     (atmosphere
-      {:names ["atmosphere" "atmosphere" "atm"]
-       :info  "One standard Earth atmosphere."}
+      ["atmosphere" "atmosphere" "atm"]
+       "One standard Earth atmosphere."
       (is 101325 pascal))
     (torr
-      {:names ["torr" "torrs"]
-       :info  "A non-SI unit of pressure."}
+      ["torr" "torrs"]
+       "A non-SI unit of pressure."
       (is (/ 1 760) atmosphere))
     (mmhg
-      {:names ["mmhg" "millimeters-of-mercury" "millimetres-of-mercury"]
-       :info  "A non-SI unit of pressure."}
+      ["mmhg" "millimeters-of-mercury" "millimetres-of-mercury"]
+       "A non-SI unit of pressure."
       (is 133.322387415  pascal))
    
     ;; energy
     (erg
-      {:names ["erg" "ergs"]
-       :info  "A non-SI unit of energy."}
+      ["erg" "ergs"]
+       "A non-SI unit of energy."
       (is (Math/pow 10 -7) joule))
     (electron-volt
-      {:names ["electron-volt" "electron-volt"]
-       :info  "The energy gained or lost by a charge of one electron when moved across a potential difference of one volt."}
+      ["electron-volt" "electron-volt"]
+       "The energy gained or lost by a charge of one electron when moved across a potential difference of one volt."
       (is (* 1.602176565 (Math/pow 10 -19)) joule))
     (btu
-      {:names ["btu" "btus" "british-thermal-unit" "british-thermal-units"]
-       :info  "The amount of energy needed to heat or cool one pound of water by one degree Fahrenheit."}
+      ["btu" "btus" "british-thermal-unit" "british-thermal-units"]
+       "The amount of energy needed to heat or cool one pound of water by one degree Fahrenheit."
       (is 1055 joule))
     (calorie
-      {:names ["calorie" "calories"]
-       :info  "The amount of energy needed to heat or cool one gram of water by one degree Celsius."}
+      ["calorie" "calories"]
+       "The amount of energy needed to heat or cool one gram of water by one degree Celsius."
       (is 4.184 joule))
-
-    ;; force
-    (pound-force
-      {:names ["pound-force" "pounds-force"]
-       :info  "A non-SI unit of force."}
-      (is 32.174049 (umul pound (udiv foot (uexp second' 2)))))
-    (dyne
-      {:names ["dyne" "dynes"]
-       :info  "A CGS unit of force."}
-      (is (Math/pow 10 -5) newton))
 
     ;; power
     (horsepower
-      {:names ["horsepower"]
-       :info  "A non-SI unit of power."}
+      ["horsepower"]
+       "A non-SI unit of power."
       (is 745.69987158 watt))
 
     ;; temperature
     (rankine
-      {:names ["rankine" "degree-rankine" "degrees-rankine"]
-       :info  "A non-SI unit of temperature. Rankine is to Fahrenheit as Kelvin is to Celsius."}
+      ["rankine" "degree-rankine" "degrees-rankine"]
+       "A non-SI unit of temperature. Rankine is to Fahrenheit as Kelvin is to Celsius."
       (is (/ 5 9) kelvin))
 
     (fahrenheit
-      {:names ["fahrenheit" "degree-fahrenheit" "degrees-fahrenheit"]
-       :info  "A non-SI unit of temperature."}
+      ["fahrenheit" "degree-fahrenheit" "degrees-fahrenheit"]
+       "A non-SI unit of temperature."
       (shift -459.67 rankine))
 
 
     ;; units related to radiation and radioactivity
     (roentgen
-      {:names ["roentgen" "roentgens"]
-       :info  "Unit of X-ray and gamma ray kerma."}
+      ["roentgen" "roentgens"]
+       "Unit of X-ray and gamma ray kerma."
       (is 0.000258 (udiv coulomb kilogram)))
     (rem'
-      {:names ["rem" "rems"]
-       :info  "Roentgen Equivalent in Mammal. A unit of effective dose of radiation."}
+      ["rem" "rems"]
+       "Roentgen Equivalent in Mammal. A unit of effective dose of radiation."
       (is 0.01 sievert))
     (rad
-      {:names ["rad" "rads"]
-       :info  "Unit of absorbed dose of radiation."}
+      ["rad" "rads"]
+       "Unit of absorbed dose of radiation."
       (is 0.01 gray))
+
+    ;; force
+    (pound-force
+      ["pound-force" "pounds-force"]
+       "A non-SI unit of force."
+      (is 32.174049 (umul pound (udiv foot (uexp second' 2)))))
+    (dyne
+      ["dyne" "dynes"]
+       "A CGS unit of force."
+      (is (Math/pow 10 -5) newton))
+    (kip
+      ["kip" "kips"]
+      "A non-SI unit of force."
+      (is 1000 pound-force))
+    (poundal
+      ["poundal" "poundals"]
+      "An Imperial unit of force."
+      (umul pound (udiv foot (uexp second' 2))))
+
+    ;; mass again
+    (slug
+      ["slug" "slugs"]
+      "An Imperial unit of mass."
+      (umul pound-force (udiv foot (uexp second' 2))))
 
     ;; time
     (minute
-      {:names ["minute" "minutes"]
-       :info "Common unit of time."}
+      ["minute" "minutes"]
+      "Common unit of time."
       (is 60 second'))
     (hour
-      {:names ["hour" "hours"]
-       :info "Common unit of time."}
+      ["hour" "hours"]
+      "Common unit of time."
       (is 60 minute))
     (day
-      {:names ["day" "days"]
-       :info "Common unit of time."}
+      ["day" "days"]
+      "Common unit of time."
       (is 24 hour))
     (week
-      {:names ["week" "weeks"]
-       :info "Common unit of time."}
+      ["week" "weeks"]
+      "Common unit of time."
       (is 7 day))
+    (weekend
+      ["weekend" "weekends"]
+      "~partytime~"
+      (is 2 day))
     (fortnight
-      {:names ["fortnight" "fortnights"]
-       :info "Common unit of time (outside of North America)."}
+      ["fortnight" "fortnights"]
+      "Common unit of time (outside of North America)."
       (is 2 week))
     (year
-      {:names ["year" "years"]
-       :info "Julian year, used in astronomy."}
+      ["year" "years"]
+      "Julian year, used in astronomy."
       (is 365.25 day))
+    (decade
+      ["decade" "decades"]
+      "Ten Julian years."
+      (is 10 year))
+    (century
+      ["century" "centuries"]
+      "Ten Julian decades."
+      (is 10 decade))
+    (millennium
+      ["millennium" "millennia"]
+      "Ten Julian centuries."
+      (is 10 century))
     (planck-time
-      {:names ["planck-time" "planck-times"]
-       :info "Time taken for light in a vacuum to travel 1 Planck length."}
+      ["planck-time" "planck-times"]
+      "Time taken for light in a vacuum to travel 1 Planck length."
       (is (* 5.39106 (Math/pow 10 -44)) second'))
     (svedberg
-      {:names ["svedberg" "svedbergs"]
-       :info "Unit of time used to measure sedimentation rate."}
+      ["svedberg" "svedbergs"]
+      "Unit of time used to measure sedimentation rate."
       (is (Math/pow 10 -13) second'))
+    (helek
+      ["helek" "halakim"]
+      "A unit of time used in the calculation of the Hebrew calendar."
+      (is (/ 10 3) second'))
+    (ke
+      ["ke"]
+      "A Chinese unit of time."
+      (is 15 minute))
+    (shake
+      ["shake" "shakes"]
+       "A unit of time used in nuclear physics."
+      (is (Math/pow 10 -8) second'))
+
+    ;; acceleration
+    (standard-gravity
+      ["standard-gravity" "standard-gravities"]
+      "The acceleration due to gravity experienced by a free-falling object in a vacuum near the surface of the Earth."
+      (is 9.80665 (udiv meter (uexp second' 2))))
+    (gal
+      ["gal" "gals" "galileo" "galileos"]
+       "Unit of acceleration. Named for Galileo Galilei."
+      (is (/ 1 100) (udiv meter (uexp second' 2))))
 
     ;; nothing else is like a sverdrup <3
     (sverdrup
-      {:names ["sverdrup" "sverdrups"]
-       :info  "Unit of rate of volume transport. Used in oceanography."}
+      ["sverdrup" "sverdrups"]
+       "Unit of rate of volume transport. Used in oceanography."
       (is 1000000 (udiv (uexp meter 3) second')))))
 

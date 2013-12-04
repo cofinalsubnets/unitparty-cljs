@@ -23,54 +23,62 @@
       })();
 
   %body
-    %header#header
+    %header
       %h1#title
-        %span#unit> UNIT
-        %span#party PARTY
+        %span.title1> UNIT
+        %span.title2 PARTY
+      %noscript
+        %strong
+          requires JavaScript!
 
-    #unitparty
+    %section#party
       %input#amount{type: 'text', title: 'Quantity to convert', value: 1}
       %input#source{type: 'text', title: 'Source unit', value: 'minute'}
-      %span#equals= "=>"
+      %span&= "=>"
       %input#target{type: 'text', title: 'Target unit', value: 'seconds'}
       #output
 
-    #help
-      %div
-        :markdown
-          ## UNITPARTY is a unit converter.
+    %section#help.content
+      :markdown
+        ## UNITPARTY is a unit converter.
 
-          It recognizes unit multiplication (`kilowatt * hour`),
-          division (`meters / second`), and exponentiation (`miles ^ 2`).
-          Operations can be grouped using parentheses.
+        It recognizes unit multiplication (`kilowatt * hour`),
+        division (`meters / second`), and exponentiation (`miles ^ 2`).
+        Operations can be grouped using parentheses.
 
-          It knows what units are compatible, and won't try to convert between
-          incompatible units.  For example, it will convert degrees Fahrenheit
-          to degrees Celsius, but not degrees Celsius to kilograms.
+        It knows what units are compatible, and won't try to convert between
+        incompatible units.  For example, it will convert degrees Fahrenheit
+        to degrees Celsius, but not degrees Celsius to kilograms.
 
-          It is somewhat aware of the concept of significant figures.
+        It is somewhat aware of significant figures. If an answer seems
+        slightly off, try adding a few more digits of precision to the input.
 
-          To use UNITPARTY, edit the text in any of the underlined fields above.
+        To use UNITPARTY, edit the text in any of the underlined fields above.
 
-          ### Disclaimer:
+        ### Disclaimer:
 
-          UNITPARTY is not a tool for serious research or scientific
-          computation. Many of the units it recognizes are not standardized,
-          and figures calculated by UNITPARTY may not agree with figures
-          from other sources.
+        UNITPARTY is not a tool for serious research or scientific
+        computation. Many of the units it recognizes are not standardized,
+        and figures calculated by UNITPARTY may not agree precisely with
+        figures from other sources.
 
-          That said, if you believe that UNITPARTY is in serious error
-          (or if there are units you'd like to see added), please
-          [email the author](mailto:walpurgisriot@gmail.com).
+        That said, if you believe that UNITPARTY is in serious error, please
+        [email the author](mailto:walpurgisriot@gmail.com).
 
-      %span.list_container
-        %h3 UNITPARTY knows about these units:
-        %ul#unitlist
-      %span.list_container
-        %h3 and recognizes these metric prefixes:
-        %ul#prefixlist
+        ### Sources:
 
-    #about
+        Any unit conversion that isn't common knowledge can be safely assumed
+        to have been gleaned from [Wikipedia](https://www.wikipedia.org).
+
+      .center
+        %span.list_container
+          %h3 UNITPARTY knows about these units:
+          %ul#unitlist.infolist
+        %span.list_container
+          %h3 ... and recognizes these metric prefixes:
+          %ul#prefixlist.infolist
+
+    %footer
       :markdown
         [feivel jellyfish](mailto:walpurgisriot@gmail.com) made this in 2013.
         It is released under the [GNU GPL](https://www.gnu.org/licenses/gpl.html).
