@@ -15,12 +15,12 @@
     (try
       (let [[amt prec] @amount
             out (unit/convert @source @target amt prec)]
-        (set! (.-innerText (id "output")) out))
+        (set! (.-textContent (id "output")) out))
       (catch js/Error err
         (set! (.-innerHTML (id "output"))
               (str "can't convert " (unit/show-unit-dimensions @source)
                    " to " (unit/show-unit-dimensions @target)))))
-    (set! (.-innerText (id "output")) "")))
+    (set! (.-textContent (id "output")) "")))
 
 (defn- update-listener [update-targ value-fn]
   (fn [e]
@@ -45,7 +45,7 @@
 
 (defn- unit-list-entry [uname info]
   (let [elem (.createElement js/document "li")]
-    (set! (.-innerText elem) uname)
+    (set! (.-textContent elem) uname)
     (set! (.-title elem) info)
     elem))
 
@@ -59,7 +59,7 @@
 
 (defn- prefix-list-entry [prefix mag]
   (let [elem (.createElement js/document "li")]
-    (set! (.-innerText elem) prefix)
+    (set! (.-textContent elem) prefix)
     (set! (.-title elem) (str "10^" mag))
     elem))
 
